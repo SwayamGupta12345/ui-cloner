@@ -36,6 +36,7 @@ Ensure you have the following installed:
 
    ```
    git clone https://github.com/SwayamGupta12345/ui-cloner.git
+   ```
 
 2. Navigate to the project directory:
 
