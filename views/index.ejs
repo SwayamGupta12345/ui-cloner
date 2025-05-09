@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>UI Cloner</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>⚛️ UI Cloner</h1>
+      <form id="cloneForm">
+        <input
+          type="text"
+          name="url"
+          placeholder="Enter React website URL"
+          required
+        />
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter React website URL name"
+          required
+        />
+        <button type="submit">Clone UI</button>
+      </form>
+
+      <% if (result) { %>
+      <div class="success">
+        ✅ Cloned Successfully! 👉
+        <a href="<%= result %>" target="_blank">View Cloned Site</a>
+      </div>
+      <% } %> <% if (error) { %>
+      <div class="error">❌ <%= error %></div>
+      <% } %>
+
+      <hr />
+     <h2>📚 Saved Clones</h2>
+<div class="saved-clones">
+  <% if (history.length > 0) { %>
+    <div class="clones-container">
+      <% history.forEach(clone => { %>
+        <div class="project-card">
+          <div class="card-header">
+            <strong><%= clone.name %></strong>
+          </div>
+          <div class="actions">
+            <button onclick="window.open('/saved/<%= clone.folder %>/index.html', '_blank')">View</button>
+            <button onclick="window.location.href='/download/<%= clone.folder %>'">Download</button>
+            <button onclick="deleteProject('<%= clone.folder %>')">Delete</button>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p>No saved clones yet.</p>
+  <% } %>
+</div>
+
+    </div>
+  </body>
+  <script>
+    document
+      .getElementById("cloneForm")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const url = formData.get("url");
+        const name = formData.get("name");
+
+        const response = await fetch("/clone", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `url=${encodeURIComponent(url)}&name=${encodeURIComponent(
+            name
+          )}`,
+        });
+
+        const html = await response.text();
+        document.open();
+        document.write(html);
+        document.close();
+      });
+    async function deleteProject(folderName) {
+      const res = await fetch(`/delete/${folderName}`, { method: "DELETE" });
+      const data = await res.json();
+      alert(data.message || "Deleted!");
+      location.reload(); // refresh list
+    }
+  </script>
+</html>
